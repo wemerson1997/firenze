@@ -1,11 +1,9 @@
 import streamlit as st
 import urllib.parse
-import qrcode
-from PIL import Image
-import io
+
 
 hub_firenze = st.sidebar.selectbox(
-    'Hub Firenze', ['WhatsApp', 'Imóvel reservado', 'Imóvel disponível', 'Imóvel indisponível', 'Gerador de QR-Code'], 0)
+    'Hub Firenze', ['WhatsApp', 'Imóvel reservado', 'Imóvel disponível', 'Imóvel indisponível', 'NFS-e Curitiba'], 0)
 
 if hub_firenze == 'WhatsApp':
     # Função para gerar o link do WhatsApp
@@ -31,11 +29,11 @@ if hub_firenze == 'WhatsApp':
             st.error("Por favor, insira tanto o número quanto a mensagem.")
 
     # Adicionando um link em uma palavra com HTML
-    st.markdown("""
+    #st.markdown("""
     ### Exemplo de Link em uma Palavra:
-    Clique no link abaixo para visitar o Google:
-    <a href="https://www.google.com" target="_blank">Google</a>
-    """, unsafe_allow_html=True)
+    #Clique no link abaixo para visitar o Google:
+    #<a href="https://www.google.com" target="_blank">Google</a>
+    #""", unsafe_allow_html=True)
 
 
 if hub_firenze == 'Imóvel reservado':
@@ -70,22 +68,23 @@ if hub_firenze == 'Imóvel reservado':
             st.error("Por favor, preencha todos os campos.")
 
 if hub_firenze == 'Imóvel disponível':
-    def generate_message(nome, email, endereco, link_endereco, link_whatsapp):
+    def generate_message(nome, email, endereco, link_endereco, link_whatsapp,Colaborador):
         message = f"""Oi, **{nome}**,
-        tudo bem? \nAqui é **Wemerson da Firenze Imóveis,** recebi seu e-mail referente ao imóvel em [{endereco}]({link_endereco}), só passando para informar que esse imóvel encontra-se disponível.
+        tudo bem? \nAqui é **{Colaborador} da Firenze Imóveis,** recebi seu e-mail referente ao imóvel em [{endereco}]({link_endereco}), só passando para informar que esse imóvel encontra-se disponível.
         Para ter mais informações e um atendimento mais rápido, envie uma mensagem clicando no nosso [WhatsApp]({link_whatsapp})\n Aguardo o seu contato!"""
         return message
 
     st.title("Mensagem para imóvel disponível")
     nome = st.text_input("Nome")
     email = st.text_input("E-mail")
+    Colaboardor = st.text_input("Colaborador")
     endereco = st.text_input("Endereço")
     link_endereco = st.text_input("Link do imóvel")
     link_whatsapp = st.text_input("Link do WhatsApp")
 
     if st.button("Gerar Mensagem"):
-        if nome and email and endereco and link_endereco and link_whatsapp:
-            message = generate_message(nome, email, endereco, link_endereco, link_whatsapp)
+        if nome and email and endereco and link_endereco and link_whatsapp and Colaboardor:
+            message = generate_message(nome, email, endereco, link_endereco, link_whatsapp, Colaboardor)
             st.markdown(message)
 
 
@@ -130,33 +129,26 @@ if hub_firenze == 'Gerador de QR-Code':
         img = qr.make_image(fill_color="black", back_color="white")
         return img
 
-    def main():
-        st.title("Gerador de QR Code")
 
-        # Campo de entrada para o texto ou URL
-        data = st.text_input("Digite o texto ou URL para gerar o QR Code:")
+if hub_firenze == 'NFS-e Curitiba':
 
-        if st.button("Gerar QR Code"):
-            if data:
-                qr_image = generate_qr_code(data)
+    # Inicializa a variável de soma na sessão
+    if 'soma' not in st.session_state:
+        st.session_state.soma = 0.0
 
-                # Convertendo a imagem para bytes
-                img_byte_arr = io.BytesIO()
-                qr_image.save(img_byte_arr, format='PNG')
-                img_byte_arr = img_byte_arr.getvalue()
+    # Entrada para o valor da comissão
+    valor_comissao = st.number_input("Digite um valor da comissão R$:", min_value=0.0, format="%.2f")
 
-                # Exibindo o QR Code
-                st.image(img_byte_arr, caption='QR Code gerado', use_column_width=True)
+    # Botão para adicionar o valor
+    if st.button('Adicionar valor'):
+        st.session_state.soma += valor_comissao
+        st.success(f"Valor de R${valor_comissao:.2f} adicionado.")
 
-                # Botão para download
-                st.download_button(
-                    label="Baixar QR Code",
-                    data=img_byte_arr,
-                    file_name="qr_code.png",
-                    mime="image/png"
-                )
-            else:
-                st.warning("Por favor, insira um texto ou URL para gerar o QR Code.")
+    # Botão para resetar a soma
+    if st.button('Resetar soma'):
+        st.session_state.soma = 0.0
+        st.success("Soma reiniciada.")
 
-    if __name__ == "__main__":
-        main()
+    # Exibe o total acumulado
+    st.write(f"Taxa de administração: R${st.session_state.soma:.2f}")
+st.echo()
