@@ -1,6 +1,6 @@
 import streamlit as st
 import urllib.parse
-import pyperclip
+#import pyperclip
 
 hub_firenze = st.sidebar.selectbox(
     'Hub Firenze',
