@@ -4,10 +4,10 @@ import pyperclip
 
 hub_firenze = st.sidebar.selectbox(
     'Hub Firenze',
-    ['WhatsApp', 'Imóvel reservado', 'Imóvel disponível', 'Imóvel indisponível', 'NFS-e Curitiba', 'Mensagem WhatsApp'],
+    ['Link WhatsApp', 'Imóvel reservado', 'Imóvel disponível', 'Imóvel indisponível', 'NFS-e Curitiba', 'Mensagem WhatsApp'],
     0)
 
-if hub_firenze == 'WhatsApp':
+if hub_firenze == 'Link WhatsApp':
     # Função para gerar o link do WhatsApp
     def gerar_link_whatsapp(numero, texto):
         texto_codificado = urllib.parse.quote(texto)
